@@ -3,16 +3,14 @@
  // @Author William Kwasidev
 const express = require('express'),
   app = require('express')(),
+  config = require('./config.json'),
   mongoClient = require('mongodb').MongoClient,
   bodyPasrser = require('body-parser'),
   PORT = 3000,
   va = require('validator'),
   util = require('./utils.js'),
-  morgan = require('morgan'),
-mongoURL = 'mongodb://localhost/contactbook';
-
+  morgan = require('morgan');
 var mgdb = null;
-
 app.use(express.static(__dirname + '/public'));
 // on CTRL close mongo instance
 process.on('SIGINT', () => {
@@ -21,7 +19,7 @@ process.on('SIGINT', () => {
   process.exit(0);
 });
 app.use(morgan('combined'));
-mongoClient.connect(mongoURL, function(err, db) {
+mongoClient.connect(config.mongodb.url, function(err, db) {
   if (err) {
     db.close();
     throw err;
