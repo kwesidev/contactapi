@@ -117,7 +117,7 @@ app.delete("/api/contact/:cell",(req,res)=>{
    });
 });
 //listen and serve requests
-app.listen(PORT || process.env.PORT, () => {
+app.listen( process.env.PORT || PORT, () => {
 
   console.log("APP running on port %d", PORT || process.env.PORT);
 
