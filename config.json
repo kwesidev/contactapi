@@ -1,6 +1,7 @@
 {
   "mongodb":{
 	     "url":"mongodb://localhost/contactbook"
-     }
+     },
+      "secret":"cxxxxgg++00++++000?????oeoeop000029292?"
 
 }

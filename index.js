@@ -9,6 +9,7 @@ const express = require('express'),
   PORT = 3000,
   va = require('validator'),
   util = require('./utils.js'),
+  jwt = require('jsonwebtoken'),
   morgan = require('morgan');
 var mgdb = null;
 app.use(express.static(__dirname + '/public'));
@@ -38,7 +39,36 @@ app.get("/", (req, res) => {
 
   res.status(200).sendFile(__dirname + '/public/index.html');
 });
+//verfy jtokens
+app.post('/api/oauth',function(req,res){
+      username = req.body.username;
+      password = req.body.password;
+      if ( username === 'admina' && password === '1234') {
+      	   const token  = jwt.sign({data:'publicapi'},config.secret,{expiresIn: '1h'});
+           return  res.status(200).json({'message':'expires in 1hour','token':token});
+      }
+      else
+	 return res.status(403).json({'message:':'Inavlid Credentials'});
 
+});
+//middleware to verify json webtoken
+app.use(function(req,res,next){
+          var obj = res;
+         const access_token = req.headers['access-token'];
+         console.log(access_token);
+         jwt.verify(access_token,config.secret,(err,decoded)=>{
+                      if (err){
+
+                         res.json({'message':'invalid token'});
+                      }
+                      else {
+                        next();
+                      }
+
+         });
+
+
+});
 app.post("/api/contact", (req, res) => {
   const email_ = req.body.email,
     fname_ = req.body.fname,
