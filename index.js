@@ -40,7 +40,7 @@ app.get("/", (req, res) => {
   res.status(200).sendFile(__dirname + '/public/index.html');
 });
 //verfy jtokens
-app.post('/api/oauth',function(req,res){
+app.post('/api/authenticate',function(req,res){
       username = req.body.username;
       password = req.body.password;
       if ( username === 'admina' && password === '1234') {
@@ -53,7 +53,7 @@ app.post('/api/oauth',function(req,res){
 });
 //middleware to verify json webtoken
 app.use(function(req,res,next){
-          var obj = res;
+         var decode_data;
          const access_token = req.headers['access-token'];
          console.log(access_token);
          jwt.verify(access_token,config.secret,(err,decoded)=>{
@@ -63,6 +63,8 @@ app.use(function(req,res,next){
                       }
                       else {
                         next();
+                        decode_data =  decoded;
+                        //console.log(decode_data);
                       }
 
          });
@@ -74,19 +76,19 @@ app.post("/api/contact", (req, res) => {
     fname_ = req.body.fname,
     mobile_ = req.body.mobile;
 
-  var errors = "";
+  var errors = [];
   if (!va.isEmail(email_))
-    errors = errors.concat("Invalid Email <br>");
-  if (fname_.length == 0)
-    errors = errors.concat("First name cannot be empty <br>");
+    errors = errors.concat("Invalid Email");
+  if (fname_.length === 0)
+    errors.push("First name cannot be empty ");
 
   if (!va.isMobilePhone(mobile_, 'en-ZA'))
-    errors = errors.concat("Invalid Mobibe Number <br>");
+    errors.push("Invalid Mobibe Number");
 
   console.log(email_);
   console.log(fname_);
   console.log(mobile_);
-  if (errors.length == 0) {
+  if (errors.length === 0) {
     mgdb.collection('contacts').insertOne({
       fullname: fname_,
       mobile: mobile_,
@@ -98,7 +100,7 @@ app.post("/api/contact", (req, res) => {
       }
       console.log('Data captured');
       res.status(200).json({
-        message: "Saved"
+        message: "Saved",
       });
     });
 
@@ -107,7 +109,8 @@ app.post("/api/contact", (req, res) => {
     console.log("*Invalid Fields \n");
     console.log(errors);
     res.status(401).json({
-      message: JSON.stringify(errors)
+      message: "Error",
+      error: errors
     });
 
   }
