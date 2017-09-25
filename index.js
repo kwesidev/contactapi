@@ -59,7 +59,7 @@ app.use(function(req,res,next){
          jwt.verify(access_token,config.secret,(err,decoded)=>{
                       if (err){
 
-                         res.json({'message':'invalid token'});
+                         res.status(403).json({'message':'Invalid Token'});
                       }
                       else {
                         next();
