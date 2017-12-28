@@ -25,11 +25,9 @@ module.exports.getContacts = function(key,cb){
             
             cb(err,null);
         }
-        else{
-            
+
             cb(null,res.rows);
         
-        }
     });
 };
 //gets a specific contact based on id
