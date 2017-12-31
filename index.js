@@ -50,10 +50,6 @@ app.post('/api/authenticate',function(req,res){
         return  res.status(200).json({'message':'expires in 1hour','token':token});
         
     });
-}
-
-	    
-
 });
 //middleware to verify json webtoken
 app.use(function(req,res,next){
