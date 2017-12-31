@@ -11,8 +11,9 @@ const express = require('express'),
   util = require('./utils.js'),
   jwt = require('jsonwebtoken'),
   morgan = require('morgan');
+var userId = null;
 app.use(express.static(__dirname + '/public'));
-// on CTRL close mongo instance
+// exit process
 process.on('SIGINT', () => {
     console.log('Going off');
     process.exit(0);
@@ -27,39 +28,46 @@ app.use(bodyPasrser.urlencoded({
 app.use(bodyPasrser.json());
 
 //verfy jtokens
-/*
+
 app.post('/api/authenticate',function(req,res){
+    
     username = req.body.username;
     password = req.body.password;
-    if ( username === 'admina' && password === '1234') {
-      	const token  = jwt.sign({data:'publicapi'},config.secret,{expiresIn: '1h'});
+    contactService.authenticate(username,password,(err,result) =>{
+        
+        if(err) {
+            return res.status(403).json({'message:':'Invalid Credentials'});
+        }
+        
+        const token  = jwt.sign({id: result},config.secret,{expiresIn: '1h'});
         return  res.status(200).json({'message':'expires in 1hour','token':token});
-    }
-    else
-	return res.status(403).json({'message:':'Inavlid Credentials'});
+        
+    });
+}
+
+	    
 
 });
 //middleware to verify json webtoken
 app.use(function(req,res,next){
-         var decode_data;
-         const access_token = req.headers['access-token'];
-         console.log(access_token);
-         jwt.verify(access_token,config.secret,(err,decoded)=>{
+        const access_token = req.headers['access-token'];
+        console.log(access_token);
+        jwt.verify(access_token,config.secret,(err,decoded)=>{
                       if (err){
 
                          res.status(403).json({'message':'Invalid Token'});
                       }
                       else {
                         next();
-                        decode_data =  decoded;
-                        //console.log(decode_data);
+                        userId =  decoded.id;
+                        console.log(userId);
                       }
 
-         });
+        });
 
 
 });
-*/
+
 app.post("/api/contact", (req, res) => {
     
     let fname = req.body.first_name,
@@ -80,7 +88,7 @@ app.post("/api/contact", (req, res) => {
     console.log(fname);
     console.log(mobile);
     if (errors.length === 0) {
-        contactService.addContact(fname,lname,email,mobile,(err,result) => {
+        contactService.addContact(userId,fname,lname,email,mobile,(err,result) => {
           
           if (err) {
               
@@ -103,11 +111,11 @@ app.post("/api/contact", (req, res) => {
 //get contacts list
 app.get("/api/contact", (req, res) => {
 
-    contactService.getContacts((err,result) => {
+    contactService.getContacts(userId,(err,result) => {
         
         if(err) {
             
-            throw err;
+            res.status(400);
         }
         
         res.status(200).json(result);
@@ -119,10 +127,10 @@ app.get("/api/contact", (req, res) => {
 app.get('/api/contact/:uuid',(req,res) => {
     
     let uuid = req.params.uuid;
-    contactService.getContact((uuid,err,result) => {
+    contactService.getContact((userId,uuid,err,result) => {
         
         if(err) {
-            throw err;
+            res.status(400);
         }
         
         res.status(200).json(result);
@@ -130,7 +138,12 @@ app.get('/api/contact/:uuid',(req,res) => {
     });
     
 });
-
+//catch errros
+app.use((err,req,res,next) => {
+    console.log(err.stack);
+    res.status(400).send('Bad Request');
+    
+});
 //listen and serve requests
 app.listen( process.env.PORT || PORT, () => {
 
