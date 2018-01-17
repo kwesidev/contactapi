@@ -16,5 +16,7 @@ CREATE TABLE contacts (
 );
 
 
+INSERT INTO users(uu_id,username,password) VALUES('6b9437ce-fb74-11e7-8c3f-9a214cf093ae','kwesidev','password');
+INSERT INTO contacts(first_name,last_name,mobile,email_address,user_id) VALUES('jackie','kwez','0658333670','anonymous@gmail.com','6b9437ce-fb74-11e7-8c3f-9a214cf093ae');
 
 
