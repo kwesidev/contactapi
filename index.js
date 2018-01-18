@@ -56,11 +56,11 @@ app.use(function(req,res,next){
         const access_token = req.headers['access-token'];
         console.log(access_token);
         jwt.verify(access_token,config.secret,(err,decoded)=>{
-                      if (err){
+                    if (err){
 
-                         res.status(403).json({'message':'Invalid Token'});
-                      }
-                      else {
+                        res.status(403).json({'message':'Invalid Token'});
+                    }
+                    else {
                         next();
                         userId =  decoded.id;
                         console.log(userId);
@@ -93,18 +93,20 @@ app.post("/api/contact", (req, res) => {
     if (errors.length === 0) {
         contactService.addContact(userId,fname,lname,email,mobile,(err,result) => {
           
-          if (err) {
+        if (err) {
               
-              throw err;
-          }
-          res.status(200).json({message:"Contact Added Succesfully"});
+            res.status(400);
+        }
+        else {
+            res.status(200).json({message:"Contact Added Succesfully"});
+        }
       });
 
     } else {
 
     console.log("*Invalid Fields \n");
     console.log(errors);
-    res.status(401).json({
+    res.status(400).json({
       message: "Error",
       error: errors
     });
@@ -117,27 +119,28 @@ app.get("/api/contact", (req, res) => {
     contactService.getContacts(userId,(err,result) => {
         
         if(err) {
-            
             res.status(400);
         }
-        
-        res.status(200).json(result);
-        
+        else {
+            res.status(200).json(result);
+        }
     });
         
 });
 
 app.get('/api/contact/:uuid',(req,res) => {
     
-    let uuid = req.params.uuid;
+    let uuid = req.params.uuid.trim();
+    console.log(uuid);
     contactService.getContact((userId,uuid,err,result) => {
         
         if(err) {
+
             res.status(400);
         }
-        
-        res.status(200).json(result);
-        
+        else {
+            res.status(200).json(result);
+        }
     });
     
 });

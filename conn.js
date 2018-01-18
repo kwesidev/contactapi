@@ -1,6 +1,6 @@
-const {Client} = require('pg');
-const config = require('./config');
-const conn = new Client({
+const {Client} = require('pg'),
+config = require('./config');
+conn = new Client({
     host: config.postgres.host,
     user: config.postgres.user,
     password: config.postgres.password,

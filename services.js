@@ -8,14 +8,14 @@ module.exports.authenticate = function(username,password,cb) {
             cb(err,null);
         }
         
-        if(res.rows.length == 0){
+        else if(res.rows.length == 0){
             cb('Invalid Credentials',null);
         }
         else
             cb(null,res.rows[0].uu_id);
     });
      
-}
+};
 //get contacts
 module.exports.getContacts = function(key,cb){
     
@@ -25,41 +25,41 @@ module.exports.getContacts = function(key,cb){
             
             cb(err,null);
         }
+        else {
 
             cb(null,res.rows);
-        
+        }        
     });
 };
 //gets a specific contact based on id
 module.exports.getContact = function (key,uuid,cb) {
     
-    let sql = "SELECT first_name,last_name,email_address,mobile FROM contacts "+
-            "WHERE uu_id=$2 AND user_id = $1";
+    let sql = 'SELECT first_name,last_name,email_address,mobile FROM contacts WHERE uu_id=$2 AND user_id = $1';
     conn.query(sql,[key,uuid],(err,res) => {
         
         if(err){
             
             cb(err,null);
         }
-        
+        else {
+
             cb(null,res.rows);
-        
+        }
     });
-}
+};
 //Insert a contact 
 module.exports.addContact = function(key,firstName,lastName,emailAddress,mobileNumber,cb){
     
-    let sql = 
-        "INSERT INTO contacts(first_name,last_name,email_address,mobile,user_id) "+
-            "VALUES($2,$3,$4,$5,$1)";
+    let sql = 'INSERT INTO contacts(first_name,last_name,email_address,mobile,user_id) VALUES($2,$3,$4,$5,$1)';
     //In Transaction mode
     conn.query("BEGIN",(errTr) =>{
         if(errTr){
             
             cb(errTr,null);
         }
-        conn.query(sql
-        ,[key,firstName,lastName,emailAddress,mobileNumber],(err,res) => {
+        else {
+            conn.query(sql
+            ,[key,firstName,lastName,emailAddress,mobileNumber],(err,res) => {
             
             if(err){
                 
@@ -67,27 +67,27 @@ module.exports.addContact = function(key,firstName,lastName,emailAddress,mobileN
             }
     
                 
-        });
+            });
         
-        conn.query("COMMIT",(errTr) =>{
+            conn.query("COMMIT",(errTr) =>{
             
-            if(errTr){
+                if(errTr){
                 
-                cb(errTr,null);
-            }
-            
-            cb(null,res);
-        });
+                    cb(errTr,null);
+                }
+
+            });
+
+        }
         
     });
     
     
-}
+};
 //update a particular contact
 module.exports.updateContact = function(key,uuid,firstName,lastName,emailAddress,mobileNumber,cb) {
     
-    let sql = "UPDATE contacts SET first_name=$3," +
-                "last_name=$4,email_address=$5,mobile_number=$6 WHERE uu_id = $2 AND user_id = $1";
+    let sql = 'UPDATE contacts SET first_name=$3,last_name=$4,email_address=$5,mobile_number=$6 WHERE uu_id = $2 AND user_id = $1';
     //Update in Transaction mode
     con.query("BEGIN",(errTr) => {
         
@@ -96,7 +96,8 @@ module.exports.updateContact = function(key,uuid,firstName,lastName,emailAddress
             cb(errT,null);
             
         }
-        conn.query(sql,[firstName,lastName,emailAddress,mobileNumber,uuid],(err,res) => {
+        else {
+            conn.query(sql,[firstName,lastName,emailAddress,mobileNumber,uuid],(err,res) => {
             
             if(err){
                 
@@ -104,18 +105,18 @@ module.exports.updateContact = function(key,uuid,firstName,lastName,emailAddress
             }
                 
             
-        });
-        conn.query("COMMIT",(errTr) => {
+            });
+            conn.query("COMMIT",(errTr) => {
             
-            if (errT){
+                if (errTr){
                 
-                cb(errTr,null);
-            }
+                    cb(errTr,null);
+                }
             
-        });
-            cb(err,res);
-        
+            });
+            cb(err,null);
+        }
     });
     
-}
+};
 
