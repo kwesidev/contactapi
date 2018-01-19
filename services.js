@@ -78,6 +78,8 @@ module.exports.addContact = function(key,firstName,lastName,emailAddress,mobileN
 
             });
 
+            cb();
+
         }
         
     });
@@ -114,7 +116,7 @@ module.exports.updateContact = function(key,uuid,firstName,lastName,emailAddress
                 }
             
             });
-            cb(err,null);
+            cb();
         }
     });
     
