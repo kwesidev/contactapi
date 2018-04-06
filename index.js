@@ -6,6 +6,7 @@ const express = require('express'),
   config = require('./config.json'),
   contactService = require('./services.js');
   bodyPasrser = require('body-parser'),
+  cors = require('cors'),
   PORT = 3000,
   va = require('validator'),
   util = require('./utils.js'),
@@ -19,11 +20,8 @@ process.on('SIGINT', () => {
     process.exit(0);
 });
 
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
+//enable cors
+app.use(cors());
 
 app.use(morgan('combined'));
 
