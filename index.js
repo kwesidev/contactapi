@@ -1,20 +1,18 @@
 #! /usr/bin/node
 //Contact API
 // @Author William Kwasidev
-
+"use strict"
 const express = require('express'),
   app = require('express')(),
   config = require('./config.json'),
   contactService = require('./services.js'),
-  schema = require('./schema.js');
-
-(bodyPasrser = require('body-parser')),
-  (cors = require('cors')),
-  (PORT = 3000),
-  (va = require('validator')),
-  (util = require('./utils.js')),
-  (jwt = require('jsonwebtoken')),
-  (morgan = require('morgan'));
+  schema = require('./schema.js'),
+  bodyPasrser = require('body-parser'),
+  cors = require('cors'),
+  PORT = 3000,
+  validator = require('validator'),
+  jwt = require('jsonwebtoken'),
+  morgan = require('morgan');
 // A String to hold the tenant id 
 var tenantId = null;
 app.use(express.static(__dirname + '/public'));
@@ -39,8 +37,9 @@ app.use(bodyPasrser.json());
 
 // Verfy jtokens
 app.post('/api/authenticate', function (req, res) {
-  username = req.body.username;
-  password = req.body.password;
+
+  let username = req.body.username;
+  let password = req.body.password;
 
   contactService.authenticate(username, password, (err, result) => {
     if (err) {
@@ -95,11 +94,11 @@ app.post('/api/contact', (req, res) => {
     mobile = req.body.mobile_number,
     email = req.body.email_address;
 
-  var errors = [];
+  let errors = [];
 
-  if (!va.isEmail(email)) errors = errors.concat('Invalid Email');
+  if (!validator.isEmail(email)) errors = errors.concat('Invalid Email');
   if (fname.length === 0) errors.push('First name cannot be empty ');
-  if (!va.isMobilePhone(mobile, 'en-ZA')) errors.push('Invalid Mobibe Number');
+  if (!validator.isMobilePhone(mobile, 'en-ZA')) errors.push('Invalid Mobibe Number');
   // Log the requests
   console.log(email);
   console.log(fname);
@@ -144,7 +143,7 @@ app.get('/api/contact', (req, res) => {
 
 app.get('/api/contact/:uuid', (req, res) => {
 
-  var id = req.params.uuid.trim();
+  let id = req.params.uuid.trim();
   contactService.getContact(id, (err, result) => {
     // if error throw error
     if (err) {

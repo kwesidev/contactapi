@@ -1,3 +1,4 @@
+"use strict"
 const conn = require('./conn.js');
 /**
  * Function to set schema search path

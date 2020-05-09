@@ -1,3 +1,4 @@
+"use strict";
 const conn = require('./conn.js');
 /**
  * Authentiates user and get the schema name
