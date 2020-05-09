@@ -1,5 +1,3 @@
-
-
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
 CREATE SCHEMA system;
 SET search_path TO system;
@@ -8,8 +6,8 @@ CREATE TABLE users (
     user_id uuid DEFAULT public.uuid_generate_v4() NOT NULL PRIMARY KEY,
     username VARCHAR NOT NULL,
     password VARCHAR NOT NULL,
-	active BOOLEAN NOT NULL DEFAULT TRUE,
-	created_on TIMESTAMP NOT NULL,
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_on TIMESTAMP NOT NULL,
     schema_name VARCHAR NOT NULL
 );
 
@@ -27,5 +25,3 @@ CREATE TABLE contacts (
 );
 
 INSERT INTO contacts(first_name, last_name, mobile_number, email_address) VALUES('jackie','kwez','0658333670','anonymous@gmail.com');
-
-
