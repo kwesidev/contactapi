@@ -15,8 +15,8 @@ const express = require('express'),
   (util = require('./utils.js')),
   (jwt = require('jsonwebtoken')),
   (morgan = require('morgan'));
-  
-var userId = null;
+// A String to hold the tenant id 
+var tenantId = null;
 app.use(express.static(__dirname + '/public'));
 // Exit process
 process.on('SIGINT', () => {
@@ -28,7 +28,6 @@ process.on('SIGINT', () => {
 app.use(cors());
 
 app.use(morgan('combined'));
-
 // Parse application/www-form-urlencoded
 app.use(
   bodyPasrser.urlencoded({
@@ -37,25 +36,8 @@ app.use(
 );
 // Parse json
 app.use(bodyPasrser.json());
-// Set schema search path
-app.use((req, res, next) => {
-  // Set tenant id
-  var tenantId = req.headers['tenant_id'];
-
-  console.log('tenant_id ' + tenantId);
-  // Set schema path
-  schema.changePath(tenantId, (err, mes) => {
-    // If error occured abort the mission
-    if (err) {
-      console.log(error);
-      throw new Error(err);
-    }
-  });
-  next();
-});
 
 // Verfy jtokens
-
 app.post('/api/authenticate', function (req, res) {
   username = req.body.username;
   password = req.body.password;
@@ -74,17 +56,37 @@ app.post('/api/authenticate', function (req, res) {
 });
 // Middleware to verify json webtoken
 app.use(function (req, res, next) {
+
   const access_token = req.headers['access-token'];
   console.log(access_token);
   jwt.verify(access_token, config.secret, (err, decoded) => {
     if (err) {
       res.status(403).json({ message: 'Invalid Token' });
     } else {
+      // Sets the tenant id
+      tenantId = decoded.id;
       next();
-      userId = decoded.id;
     }
   });
+
 });
+
+// Set schema search path
+app.use((req, res, next) => {
+  // Set tenant id
+
+  console.log('tenant_id ' + tenantId);
+  // Set schema path
+  schema.changePath(tenantId, (err, mes) => {
+    // If error occured abort the mission
+    if (err) {
+      console.log(error);
+      throw new Error(err);
+    }
+  });
+  next();
+});
+
 
 app.post('/api/contact', (req, res) => {
   // capture details
@@ -102,23 +104,24 @@ app.post('/api/contact', (req, res) => {
   console.log(email);
   console.log(fname);
   console.log(mobile);
-  
+
   if (errors.length === 0) {
     contactService.addContact(
-      userId,
       fname,
       lname,
       email,
       mobile,
       (err, result) => {
         if (err) {
-          res.status(400);
+          console.log(err);
+          throw Error(err);
         } else {
           res.status(200).json({ message: 'Contact Added Succesfully' });
         }
       }
     );
   } else {
+    // Log erros
     console.log('*Invalid Fields \n');
     console.log(errors);
     res.status(400).json({
@@ -129,9 +132,10 @@ app.post('/api/contact', (req, res) => {
 });
 // Get contacts list
 app.get('/api/contact', (req, res) => {
-  contactService.getContacts(userId, (err, result) => {
+  console.log('hey');
+  contactService.getContacts((err, result) => {
     if (err) {
-      res.status(400);
+        throw new Error(err);
     } else {
       res.status(200).json(result);
     }
@@ -139,11 +143,13 @@ app.get('/api/contact', (req, res) => {
 });
 
 app.get('/api/contact/:uuid', (req, res) => {
-  let uuid = req.params.uuid.trim();
-  console.log(uuid);
-  contactService.getContact((userId, uuid, err, result) => {
+
+  var id = req.params.uuid.trim();
+  contactService.getContact(id, (err, result) => {
+    // if error throw error
     if (err) {
-      res.status(400);
+      console.log(err);
+      throw new Error(err);
     } else {
       res.status(200).json(result);
     }
