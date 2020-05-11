@@ -1,16 +1,25 @@
 "use strict";
 const conn = require('./conn.js');
 /**
- * Authentiates user and get the schema name
- * @param {String} username
- * @param {String} password
+ * Authentiates user and get the schema namez
+ * 
  * @param {Function} cb   A Callback function
  */
 module.exports.authenticate = function (username, password, cb) {
 
+  let sql = 
+      'SELECT '+
+        'tenants.schema_name '+
+      'FROM '+
+        'users '+
+      'LEFT JOIN '+
+        'tenants ON users.tenant_id = tenants.id '+
+      'WHERE '+
+        'LOWER(username) = LOWER($1) AND LOWER(password) = LOWER($2) LIMIT 1 ; ';
+ 
   conn.query(
-    'SELECT schema_name FROM system.users  WHERE lower(username) = $1 AND lower(password) = lower($2)',
-    [username, password],
+    sql,
+   [username, password],
     (err, res) => {
       if (err) {
         cb(err, null);
@@ -22,7 +31,7 @@ module.exports.authenticate = function (username, password, cb) {
 };
 /**
  * Gets a list of contacts
-
+ * 
  * @param {String} cb A Callback function
  */
 module.exports.getContacts = function (cb) {
@@ -34,12 +43,14 @@ module.exports.getContacts = function (cb) {
       } else {
         cb(null, res.rows);
       }
+      
     }
   );
 };
 
 /**
  * Gets a specific contact based on id
+ * 
  * @param {String} id
  * @param {Function} cb A Callback function
  */
@@ -58,6 +69,7 @@ module.exports.getContact = function (id, cb) {
 };
 /**
  * Inserts a new contact
+ * 
  * @param {String} firstName
  * @param {String} lastName
  * @param {String} email_address
@@ -102,6 +114,7 @@ module.exports.addContact = function (
 };
 /**
  * Updates a specific contact
+ * 
  * @param {String} id
  * @param {String} firstName
  * @param {String} lastName

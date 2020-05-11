@@ -41,6 +41,15 @@ app.post('/api/authenticate', function (req, res) {
   let username = req.body.username;
   let password = req.body.password;
 
+  // Set schema path system for authentication
+  schema.changePath('system', (err, mes) => {
+    // If error occured abort the mission
+    if (err) {
+      console.log(error);
+      throw new Error(err);
+    }
+  });
+
   contactService.authenticate(username, password, (err, result) => {
     if (err) {
       return res.status(403).json({ 'message:': 'Invalid Credentials' });
@@ -70,7 +79,7 @@ app.use(function (req, res, next) {
 
 });
 
-// Set schema search path
+// Middleware to set schema path 
 app.use((req, res, next) => {
   // Set tenant id
 
@@ -131,7 +140,7 @@ app.post('/api/contact', (req, res) => {
 });
 // Get contacts list
 app.get('/api/contact', (req, res) => {
-  console.log('hey');
+
   contactService.getContacts((err, result) => {
     if (err) {
         throw new Error(err);
