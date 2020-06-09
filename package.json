@@ -1,8 +1,8 @@
 {
-  "name": "contactapp",
+  "name": "contactapi",
   "version": "1.0.0",
   "description": "Contact Application",
-  "respoistory": "https://bitbucket.org/kwesidev/contactapi",
+  "respoistory": "https://github.com/kwesidev/contactapi",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,7 +10,9 @@
   "keywords": [
     "Store",
     "your",
-    "contacts"
+    "contacts",
+    "postgres",
+    "mulitenancy"
   ],
   "author": "kwesidev",
   "license": "BSD",
