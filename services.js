@@ -1,7 +1,7 @@
 "use strict";
 const conn = require('./conn.js');
 /**
- * Authentiates user and get the schema namez
+ * Authentiates user and get the schema name
  * 
  * @param {Function} cb   A Callback function
  */
@@ -86,11 +86,6 @@ module.exports.addContact = function (
 
   let sql =
     'INSERT INTO contacts(first_name, last_name, email_address, mobile_number) VALUES($1, $2, $3, $4)';
-  //In Transaction mode
-  conn.query('BEGIN', (errTr) => {
-    if (errTr) {
-      cb(errTr, null);
-    } else {
       conn.query(
         sql,
         [firstName, lastName, emailAddress, mobileNumber],
@@ -98,18 +93,11 @@ module.exports.addContact = function (
           if (err) {
             cb(err, null);
           }
+          else {
+            cb();
+          }
         }
       );
-
-      conn.query('COMMIT', (errTr) => {
-        if (errTr) {
-          cb(errTr, null);
-        }
-      });
-
-      cb();
-    }
-  });
 
 };
 /**
@@ -133,11 +121,6 @@ module.exports.updateContact = function (
 
   let sql =
     'UPDATE contacts SET first_name= $2, last_name= $3, email_address= $4, mobile_number= $5 WHERE id = $1';
-  //Update in Transaction mode
-  con.query('BEGIN', (errTr) => {
-    if (errT) {
-      cb(errT, null);
-    } else {
       conn.query(
         sql,
         [id, firstName, lastName, emailAddress, mobileNumber],
@@ -145,15 +128,10 @@ module.exports.updateContact = function (
           if (err) {
             cb(err, null);
           }
+          else {
+            cb();
+          }
         }
       );
-      conn.query('COMMIT', (errTr) => {
-        if (errTr) {
-          cb(errTr, null);
-        }
-      });
-      cb();
-    }
-  });
 
 };
