@@ -23,6 +23,6 @@
     "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",
     "pg": "^8.3.3",
-    "validator": "^6.3.0"
+    "validator": "^13.7.0"
   }
 }
