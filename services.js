@@ -15,7 +15,7 @@ module.exports.authenticate = function (username, password, cb) {
       'LEFT JOIN '+
         'tenants ON users.tenant_id = tenants.id '+
       'WHERE '+
-        'LOWER(username) = LOWER($1) AND LOWER(password) = LOWER($2) LIMIT 1 ; ';
+        'LOWER(username) = LOWER($1) AND LOWER(password) = LOWER($2) AND active = TRUE  LIMIT 1 ; ';
  
   conn.query(
     sql,
@@ -29,6 +29,7 @@ module.exports.authenticate = function (username, password, cb) {
     }
   );
 };
+
 /**
  * Gets a list of contacts
  * 
@@ -36,7 +37,7 @@ module.exports.authenticate = function (username, password, cb) {
  */
 module.exports.getContacts = function (cb) {
   conn.query(
-    'SELECT id,first_name,last_name,email_address,mobile_number FROM contacts ',
+    'SELECT id,first_name,last_name,email_address,mobile_number FROM contacts ;',
     (err, res) => {
       if (err) {
         cb(err, null);
@@ -57,7 +58,7 @@ module.exports.getContacts = function (cb) {
 module.exports.getContact = function (id, cb) {
 
   let sql =
-    'SELECT first_name,last_name,email_address,mobile_number FROM contacts WHERE id = $1';
+    'SELECT first_name,last_name,email_address,mobile_number FROM contacts WHERE id = $1; ' ;
   conn.query(sql, [id], (err, res) => {
     if (err) {
       cb(err, null);
@@ -85,7 +86,7 @@ module.exports.addContact = function (
 ) {
 
   let sql =
-    'INSERT INTO contacts(first_name, last_name, email_address, mobile_number) VALUES($1, $2, $3, $4)';
+    'INSERT INTO contacts(first_name, last_name, email_address, mobile_number) VALUES($1, $2, $3, $4);';
       conn.query(
         sql,
         [firstName, lastName, emailAddress, mobileNumber],
@@ -93,7 +94,7 @@ module.exports.addContact = function (
           if (err) {
             cb(err, null);
           }
-          else {
+          else { 
             cb();
           }
         }
@@ -120,7 +121,7 @@ module.exports.updateContact = function (
 ) {
 
   let sql =
-    'UPDATE contacts SET first_name= $2, last_name= $3, email_address= $4, mobile_number= $5 WHERE id = $1';
+    'UPDATE contacts SET first_name= $2, last_name= $3, email_address= $4, mobile_number= $5 WHERE id = $1;';
       conn.query(
         sql,
         [id, firstName, lastName, emailAddress, mobileNumber],

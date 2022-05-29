@@ -37,9 +37,9 @@ app.use(bodyPasrser.json());
 
 // Verfy jtokens
 app.post('/api/authenticate', function (req, res) {
-
   let username = req.body.username;
   let password = req.body.password;
+  console.log(username);
 
   // Set schema path system for authentication
   schema.changePath('system', (err, mes) => {
@@ -51,10 +51,10 @@ app.post('/api/authenticate', function (req, res) {
   });
 
   contactService.authenticate(username, password, (err, result) => {
+    console.log(result);
     if (err) {
       return res.status(403).json({ 'message:': 'Invalid Credentials' });
     }
-
     const token = jwt.sign({ id: result }, config.secret, {
       expiresIn: '1h',
     });
@@ -64,37 +64,26 @@ app.post('/api/authenticate', function (req, res) {
 });
 // Middleware to verify json webtoken
 app.use(function (req, res, next) {
-
   const access_token = req.headers['access-token'];
-  console.log(access_token);
+  let tenantId = null;
   jwt.verify(access_token, config.secret, (err, decoded) => {
     if (err) {
       res.status(403).json({ message: 'Invalid Token' });
     } else {
       // Sets the tenant id
       tenantId = decoded.id;
+      // Set schema path
+      schema.changePath(tenantId, (err, mes) => {
+        // If error occured abort the mission
+        if (err) {
+          console.log(error);
+          throw new Error(err);
+        }
+      });
       next();
     }
   });
-
 });
-
-// Middleware to set schema path 
-app.use((req, res, next) => {
-  // Set tenant id
-
-  console.log('tenant_id ' + tenantId);
-  // Set schema path
-  schema.changePath(tenantId, (err, mes) => {
-    // If error occured abort the mission
-    if (err) {
-      console.log(error);
-      throw new Error(err);
-    }
-  });
-  next();
-});
-
 
 app.post('/api/contact', (req, res) => {
   // capture details
@@ -143,7 +132,7 @@ app.get('/api/contact', (req, res) => {
 
   contactService.getContacts((err, result) => {
     if (err) {
-        throw new Error(err);
+      throw new Error(err);
     } else {
       res.status(200).json(result);
     }

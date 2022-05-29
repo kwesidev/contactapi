@@ -3,7 +3,7 @@
 	    "host":"localhost",
         "user":"postgres",
         "password":"root",
-        "port": 5432,
+        "port": 6432,
         "dbname": "contactbook"
      },
     "secret":"cxxxxgg++00++++000?????oeoeop000029292?"
