@@ -23,7 +23,7 @@ CREATE TABLE users (
 INSERT INTO users(username, password, created_on, tenant_id) VALUES('kwesidev', 'password', NOW(), '74b73f8a-758e-45ce-86bf-b6c0799bc79c');
 
 CREATE SCHEMA tenant_1 ;
-SET search_path TO tenant1;
+SET search_path TO tenant_1;
 
 CREATE TABLE contacts (
     id uuid DEFAULT public.uuid_generate_v4() NOT NULL PRIMARY KEY,
